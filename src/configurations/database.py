@@ -56,7 +56,7 @@ async def get_async_session() -> AsyncGenerator:
 
 async def create_db_and_tables():
     from src.models.books import Book
-
+    from src.models.sellers import Seller
     global __async_engine
 
     if __async_engine is None:
@@ -65,5 +65,5 @@ async def create_db_and_tables():
         )
 
     async with __async_engine.begin() as conn:
-        # await conn.run_sync(BaseModel.metadata.drop_all)
+        #await conn.run_sync(BaseModel.metadata.drop_all)
         await conn.run_sync(BaseModel.metadata.create_all)
