@@ -21,8 +21,8 @@ sellers_router = APIRouter(tags=["sellers"], prefix="/sellers")
 DBSession = Annotated[AsyncSession, Depends(get_async_session)]
 
 
-# Ручка для создания записи о книге в БД. Возвращает созданную книгу.
-# @books_router.post("/books/", status_code=status.HTTP_201_CREATED)
+# Ручка для создания записи о продавце в БД. Возвращает созданного продавца.
+
 @sellers_router.post(
     "/", response_model=NewSeller, status_code=status.HTTP_201_CREATED
 )  # Прописываем модель ответа
@@ -48,18 +48,17 @@ async def create_seller(
     return new_seller
 
 
-
+# Ручка для получения данных о всех продавцах
 @sellers_router.get("/", response_model=ReturnedAllSellers)
 async def get_all_sellers(session: DBSession):
-    # Хотим видеть формат
-    # books: [{"id": 1, "title": "blabla", ...., "year": 2023},{...}]
+
     query = select(Seller).options(selectinload(Seller.books))  # SELECT * FROM book
     result = await session.execute(query)
     sellers = result.scalars().all()
     return {"sellers": sellers}
 
 
-
+# Ручка для получения данных о продавце
 @sellers_router.get("/{seller_id}", response_model=ReturnedSeller)
 async def get_seller(seller_id: int, session: DBSession):
     #if result := await session.get(Seller, seller_id):
@@ -73,26 +72,26 @@ async def get_seller(seller_id: int, session: DBSession):
     return seller
 
 
-
+# Ручка для удаления продавца
 @sellers_router.delete("/{seller_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_seller(seller_id: int, session: DBSession):
     deleted_seller = await session.get(Seller, seller_id)
-    ic(deleted_seller)  # Красивая и информативная замена для print. Полезна при отладке.
+    ic(deleted_seller)  
     if deleted_seller:
         await session.delete(deleted_seller)
     else:
         return Response(status_code=status.HTTP_404_NOT_FOUND)
 
 
-# Ручка для обновления данных о книге
-@sellers_router.put("/{seller_id}", response_model=ReturnedSeller)
-async def update_seller(seller_id: int, new_seller_data: ReturnedSeller, session: DBSession):
+# Ручка для обновления данных о продавце
+@sellers_router.put("/{seller_id}", response_model=NewSeller)
+async def update_seller(seller_id: int, new_seller_data: NewSeller, session: DBSession):
     # Оператор "морж", позволяющий одновременно и присвоить значение и проверить его. Заменяет то, что закомментировано выше.
     if updated_seller := await session.get(Seller, seller_id):
         updated_seller.first_name = new_seller_data.first_name
         updated_seller.last_name = new_seller_data.last_name
         updated_seller.email = new_seller_data.email
-        updated_seller.password = updated_seller.password
+        #updated_seller.password = updated_seller.password
 
         await session.flush()
 

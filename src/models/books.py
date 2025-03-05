@@ -13,4 +13,5 @@ class Book(BaseModel):
     year: Mapped[int]
     pages: Mapped[int]
     seller_id: Mapped[int] = mapped_column(ForeignKey("sellers_table.id", ondelete="CASCADE"), nullable=False)
-    seller = relationship('Seller', back_populates='books') #, lazy="selectin")
+    seller = relationship('Seller', back_populates='books') 
+    # Seller - имеет связь с Book, при удалении продавца его книги тоже удалятся. Указываем, что seller_id не может отсутствовать

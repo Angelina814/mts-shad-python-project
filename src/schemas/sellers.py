@@ -11,13 +11,14 @@ class BaseSeller(BaseModel):
     email: str
     password : str
 
+# Класс, валидирующий исходящие данные. Он уже содержит id
 class NewSeller(BaseModel):
     id: int
     first_name: str
     last_name: str
     email: str
 
-# Класс, валидирующий исходящие данные. Он уже содержит id
+# Класс для возврата одного продавца
 class ReturnedSeller(BaseModel):
     id: int
     first_name: str
@@ -26,6 +27,6 @@ class ReturnedSeller(BaseModel):
     books: list[ReturnedBook] = [] #??? list[BaseBook] = []
 
 
-# Класс для возврата массива объектов "Книга"
+# Класс для возврата массива объектов "Продавцы"
 class ReturnedAllSellers(BaseModel):
     sellers: list[ReturnedSeller]

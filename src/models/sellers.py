@@ -14,5 +14,5 @@ class Seller(BaseModel):
     email: Mapped[str] = mapped_column(String(50), nullable=False)
     password: Mapped[str] = mapped_column(String(50), nullable=False)
     books = relationship('Book', back_populates='seller', cascade="all, delete-orphan")
-
+    # Seller - имеет связь с Book, при удалении продавца его книги тоже удалятся
     #books: Mapped[Optional[list[Book]]] = relationship()
