@@ -7,6 +7,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Response, status
 from sqlalchemy import select
 from src.models.books import Book
+from src.models.sellers import Seller
 from src.schemas import IncomingBook, ReturnedAllbooks, ReturnedBook
 from icecream import ic
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -36,14 +37,20 @@ async def create_book(
             "title": book.title,
             "author": book.author,
             "year": book.year,
+            "seller_id" : book.seller_id, 
             "pages": book.pages,
+            
         }
     )
+    # Проверяем что продавец с таким ID существует, иначе возвращаем ошибку
+    if result := await session.get(Seller, book.seller_id):
 
-    session.add(new_book)
-    await session.flush()
+        session.add(new_book)
+        await session.flush()
 
-    return new_book
+        return new_book
+    else:
+        return Response(status_code=status.HTTP_404_NOT_FOUND)
 
 
 # Ручка, возвращающая все книги
@@ -86,6 +93,7 @@ async def update_book(book_id: int, new_book_data: ReturnedBook, session: DBSess
         updated_book.title = new_book_data.title
         updated_book.year = new_book_data.year
         updated_book.pages = new_book_data.pages
+        #updated_book.seller_id = updated_book.seller_id #???
 
         await session.flush()
 
